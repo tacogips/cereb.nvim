@@ -21,7 +21,7 @@ end
 local function cereb_page_with_new_input()
 	local lines = api.nvim_buf_get_lines(0, 0, -1, false)
 
-	local user_input = vim.fn.input("your new query: ")
+	local user_input = vim.trim(vim.fn.input("your new query: "))
 	if user_input == nil or user_input == "" then
 		vim.notify("canceled")
 		return
