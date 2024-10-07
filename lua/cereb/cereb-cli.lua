@@ -23,7 +23,14 @@ local function run_cereb_command(input_text, args, cmd_path, callback, timeout)
 	end
 end
 
-local _query_and_append_to_buffer = function(input_string, cereb_cmd_path, args)
+local mergeLines = function(t1, t2)
+	for _, v in ipairs(t2) do
+		table.insert(t1, v)
+	end
+	return t1
+end
+
+local _query_and_append_to_buffer = function(input_string, cereb_cmd_path, args, output_row)
 	input_string = vim.trim(input_string)
 	if #input_string == 0 then
 		vim.notify("No input string")
@@ -34,20 +41,24 @@ local _query_and_append_to_buffer = function(input_string, cereb_cmd_path, args)
 		if not result then
 			vim.notify("cereb: failed to get result")
 		else
-			local last_line = vim.fn.line("$")
-			vim.api.nvim_buf_set_lines(0, last_line, -1, false, vim.split("\n" .. result, "\n"))
+			local result_lines = vim.split("\n" .. result .. "\n", "\n")
+
+			local existing_lines = vim.api.nvim_buf_get_lines(0, output_row, -1, false)
+			local merged_lines = mergeLines(result_lines, existing_lines)
+
+			vim.api.nvim_buf_set_lines(0, output_row, -1, false, merged_lines)
 		end
 	end
 
 	run_cereb_command(input_string, args, cereb_cmd_path, callback)
 end
 
-M.query_and_append_to_buffer_just_response = function(input_string, cereb_cmd_path)
-	_query_and_append_to_buffer(input_string, cereb_cmd_path, { "--no-history", "--no-latest-query" })
+M.query_and_append_to_buffer_just_response = function(input_string, cereb_cmd_path, output_row)
+	_query_and_append_to_buffer(input_string, cereb_cmd_path, { "--no-history", "--no-latest-query" }, output_row)
 end
 
-M.query_and_append_to_buffer_with_latest_query = function(input_string, cereb_cmd_path)
-	_query_and_append_to_buffer(input_string, cereb_cmd_path, { "--no-history" })
+M.query_and_append_to_buffer_with_latest_query = function(input_string, cereb_cmd_path, output_row)
+	_query_and_append_to_buffer(input_string, cereb_cmd_path, { "--no-history" }, output_row)
 end
 
 return M
