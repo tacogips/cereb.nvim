@@ -15,7 +15,7 @@ local function cereb_page()
 	local lines = api.nvim_buf_get_lines(0, 0, -1, false)
 	local page_contents = table.concat(lines, "\n")
 
-	cereb_cli.query_and_append_to_buffer(page_contents, config.cereb_bin_path)
+	cereb_cli.query_and_append_to_buffer_just_response(page_contents, config.cereb_bin_path)
 end
 
 local function cereb_selected()
@@ -23,13 +23,13 @@ local function cereb_selected()
 	if selected_text == nil then
 		vim.notify("no selected text")
 	else
-		cereb_cli.query_and_append_to_buffer(selected_text.selection, config.cereb_bin_path)
+		cereb_cli.query_and_append_to_buffer_just_response(selected_text.selection, config.cereb_bin_path)
 	end
 end
 
 local function cereb_current_line()
 	local current_line = vim.api.nvim_get_current_line()
-	cereb_cli.query_and_append_to_buffer(current_line, config.cereb_bin_path)
+	cereb_cli.query_and_append_to_buffer_just_response(current_line, config.cereb_bin_path)
 end
 
 function M.setup(user_options)
