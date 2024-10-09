@@ -1,6 +1,7 @@
 local Job = require("plenary.job")
 
 local M = {}
+
 local function run_cereb_command(input_text, args, cmd_path, callback, timeout)
 	local error_msg = ""
 	local job = Job:new({
@@ -74,7 +75,8 @@ M.query_and_append_to_buffer_just_response = function(
 	current_buffer_dir
 )
 	local args = { "--no-history", "--no-latest-query" }
-	args = vim.tbl_extend("force", args, dir_args(workspace_root_dir, current_buffer_dir))
+
+	args = vim.list_extend(args, dir_args(workspace_root_dir, current_buffer_dir))
 	_query_and_append_to_buffer(input_string, cereb_cmd_path, args, output_row_num)
 end
 
@@ -86,7 +88,7 @@ M.query_and_append_to_buffer_with_latest_query = function(
 	current_buffer_dir
 )
 	local args = { "--no-history" }
-	args = vim.tbl_extend("force", args, dir_args(workspace_root_dir, current_buffer_dir))
+	args = vim.list_extend(args, dir_args(workspace_root_dir, current_buffer_dir))
 	_query_and_append_to_buffer(input_string, cereb_cmd_path, args, output_row)
 end
 
