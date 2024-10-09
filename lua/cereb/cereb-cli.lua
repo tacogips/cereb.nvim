@@ -53,12 +53,41 @@ local _query_and_append_to_buffer = function(input_string, cereb_cmd_path, args,
 	run_cereb_command(input_string, args, cereb_cmd_path, callback)
 end
 
-M.query_and_append_to_buffer_just_response = function(input_string, cereb_cmd_path, output_row)
-	_query_and_append_to_buffer(input_string, cereb_cmd_path, { "--no-history", "--no-latest-query" }, output_row)
+local function dir_args(workspace_root_dir, current_buffer_dir)
+	local args = {}
+	if workspace_root_dir ~= nil then
+		table.insert(args, "--work-root-dir=" .. workspace_root_dir)
+	end
+
+	if current_buffer_dir ~= nil then
+		table.insert(args, "--work-current-dir=" .. current_buffer_dir)
+	end
+
+	return args
 end
 
-M.query_and_append_to_buffer_with_latest_query = function(input_string, cereb_cmd_path, output_row)
-	_query_and_append_to_buffer(input_string, cereb_cmd_path, { "--no-history" }, output_row)
+M.query_and_append_to_buffer_just_response = function(
+	input_string,
+	cereb_cmd_path,
+	output_row_num,
+	workspace_root_dir,
+	current_buffer_dir
+)
+	local args = { "--no-history", "--no-latest-query" }
+	args = vim.tbl_extend("force", args, dir_args(workspace_root_dir, current_buffer_dir))
+	_query_and_append_to_buffer(input_string, cereb_cmd_path, args, output_row_num)
+end
+
+M.query_and_append_to_buffer_with_latest_query = function(
+	input_string,
+	cereb_cmd_path,
+	output_row,
+	workspace_root_dir,
+	current_buffer_dir
+)
+	local args = { "--no-history" }
+	args = vim.tbl_extend("force", args, dir_args(workspace_root_dir, current_buffer_dir))
+	_query_and_append_to_buffer(input_string, cereb_cmd_path, args, output_row)
 end
 
 return M

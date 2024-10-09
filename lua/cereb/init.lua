@@ -1,22 +1,30 @@
 local buf = require("cereb.buffer")
 
 local cereb_cli = require("cereb.cereb-cli")
+local find_dir = require("cereb.find_dir")
 local M = {}
 
-local cmd = vim.cmd
 local api = vim.api
-local fn = vim.fn
 
 local config = {
-	cereb_bin_path = "cereb",
+	cereb_cmd = "cereb",
+
+	workspace = {
+		root_patterns = { ".obsidian", ".git" },
+		max_ancestor_depth = 30,
+	},
 }
+
+local function find_workspace_root()
+	return find_dir.find_dir_which_has_patterns(config.workspace.root_patterns, config.workspace.max_ancestor_depth)
+end
 
 local function cereb_page()
 	local lines = api.nvim_buf_get_lines(0, 0, -1, false)
 	local page_contents = table.concat(lines, "\n")
 
 	local last_line = vim.fn.line("$")
-	cereb_cli.query_and_append_to_buffer_just_response(page_contents, config.cereb_bin_path, last_line)
+	cereb_cli.query_and_append_to_buffer_just_response(page_contents, config.cereb_cmd, last_line)
 end
 
 local function cereb_page_with_new_input()
@@ -32,7 +40,7 @@ local function cereb_page_with_new_input()
 	page_contents = page_contents .. "\n" .. "cereb-user\n" .. "---\n" .. user_input -- TODO(tacogips) dry
 
 	local last_line = vim.fn.line("$")
-	cereb_cli.query_and_append_to_buffer_with_latest_query(page_contents, config.cereb_bin_path, last_line)
+	cereb_cli.query_and_append_to_buffer_with_latest_query(page_contents, config.cereb_cmd, last_line)
 end
 
 local function cereb_selected()
@@ -41,7 +49,7 @@ local function cereb_selected()
 		vim.notify("no selected text")
 	else
 		local end_line = vim.fn.line("'>") + 1
-		cereb_cli.query_and_append_to_buffer_just_response(selected_text.selection, config.cereb_bin_path, end_line)
+		cereb_cli.query_and_append_to_buffer_just_response(selected_text.selection, config.cereb_cmd, end_line)
 	end
 end
 
@@ -59,7 +67,7 @@ local function cereb_selected_with_new_input()
 		local query = selected_text.selection .. "\n" .. "cereb-user\n" .. "---\n" .. user_input -- TODO(tacogips) dry
 
 		local end_line = vim.fn.line("'>")
-		cereb_cli.query_and_append_to_buffer_with_latest_query(query, config.cereb_bin_path, end_line)
+		cereb_cli.query_and_append_to_buffer_with_latest_query(query, config.cereb_cmd, end_line)
 	end
 end
 
@@ -67,7 +75,7 @@ local function cereb_current_line()
 	local current_line = vim.api.nvim_get_current_line()
 
 	local current_line_number = vim.fn.line(".")
-	cereb_cli.query_and_append_to_buffer_just_response(current_line, config.cereb_bin_path, current_line_number)
+	cereb_cli.query_and_append_to_buffer_just_response(current_line, config.cereb_cmd, current_line_number)
 end
 
 function M.setup(user_options)
