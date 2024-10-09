@@ -5,7 +5,7 @@ function M.current_dir()
 	return vim.fn.getcwd()
 end
 -- these codes are based on https://github.com/ahmedkhalf/project.nvim
-function M.find_dir_which_has_pattern(patterns, max_ancestor_depth)
+function M.find_dir_which_has_patterns(patterns, max_ancestor_depth)
 	local search_dir = vim.fn.getcwd()
 	local last_dir_cache = ""
 	local curr_dir_cache = {}

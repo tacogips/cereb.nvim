@@ -1,7 +1,7 @@
 local buf = require("cereb.buffer")
 
 local cereb_cli = require("cereb.cereb-cli")
-local find_dir = require("cereb.find_dir")
+local find_dir = require("cereb.find-dir")
 local M = {}
 
 local api = vim.api
@@ -24,7 +24,13 @@ local function cereb_page()
 	local page_contents = table.concat(lines, "\n")
 
 	local last_line = vim.fn.line("$")
-	cereb_cli.query_and_append_to_buffer_just_response(page_contents, config.cereb_cmd, last_line)
+	cereb_cli.query_and_append_to_buffer_just_response(
+		page_contents,
+		config.cereb_cmd,
+		last_line,
+		find_workspace_root(),
+		find_dir.current_dir()
+	)
 end
 
 local function cereb_page_with_new_input()
@@ -40,7 +46,13 @@ local function cereb_page_with_new_input()
 	page_contents = page_contents .. "\n" .. "cereb-user\n" .. "---\n" .. user_input -- TODO(tacogips) dry
 
 	local last_line = vim.fn.line("$")
-	cereb_cli.query_and_append_to_buffer_with_latest_query(page_contents, config.cereb_cmd, last_line)
+	cereb_cli.query_and_append_to_buffer_with_latest_query(
+		page_contents,
+		config.cereb_cmd,
+		last_line,
+		find_workspace_root(),
+		find_dir.current_dir()
+	)
 end
 
 local function cereb_selected()
@@ -67,7 +79,13 @@ local function cereb_selected_with_new_input()
 		local query = selected_text.selection .. "\n" .. "cereb-user\n" .. "---\n" .. user_input -- TODO(tacogips) dry
 
 		local end_line = vim.fn.line("'>")
-		cereb_cli.query_and_append_to_buffer_with_latest_query(query, config.cereb_cmd, end_line)
+		cereb_cli.query_and_append_to_buffer_with_latest_query(
+			query,
+			config.cereb_cmd,
+			end_line,
+			find_workspace_root(),
+			find_dir.current_dir()
+		)
 	end
 end
 
@@ -75,7 +93,13 @@ local function cereb_current_line()
 	local current_line = vim.api.nvim_get_current_line()
 
 	local current_line_number = vim.fn.line(".")
-	cereb_cli.query_and_append_to_buffer_just_response(current_line, config.cereb_cmd, current_line_number)
+	cereb_cli.query_and_append_to_buffer_just_response(
+		current_line,
+		config.cereb_cmd,
+		current_line_number,
+		find_workspace_root(),
+		find_dir.current_dir()
+	)
 end
 
 function M.setup(user_options)
