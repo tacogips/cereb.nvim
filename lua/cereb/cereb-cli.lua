@@ -16,7 +16,7 @@ local function run_cereb_command(input_text, args, cmd_path, callback, timeout)
 
 	local result, _ = job:sync(timeout or 600000)
 
-	if error_msg ~= "" then
+	if error_msg ~= nil then
 		vim.notify("cereb error: " .. error_msg)
 	end
 	if result then
